@@ -5,27 +5,30 @@ module carry_lookahead_adder#(parameter N=4)(
   output logic[N:0] result
 );
   logic[N-1:0] sum;
-  logic[N-1:0] carry;
+  logic[N:0] carry;
   logic[N-1:0] prop;
   logic[N-1:0] gen;
+
+  assign carry[0] = CIN;
  // Add code for carry lookahead adder 
   genvar i;
   generate
-    for(int i = 0; i < N; i++) begin:adders
+    for(i = 0; i < N; i++) begin:adders
     fulladder adder_inst(
-    .a(A[i]), .b(B[i]), .cin(CIN),
-    .sum(sum[i]), .cout(carry[i]))
+    .a(A[i]), .b(B[i]), .cin(carry[i]),
+    .sum(sum[i]), .cout());
     end:adders
   endgenerate
 
-  always @(A, B, CIN) begin
-    for(int i = 0; i < N; i++) begin
-      prop[i] = A[i] | B[i];
-      gen[i] = A[i] & B[i];
-      carry[i+1] = gen[i] | (prop[i] & carry[i]);
-    end
-    assign result = {carry[N], sum};
-  end
+  genvar j;
+  generate
+    for(j = 0; j < N; j++) begin:carry_loop
+    assign prop[j] = A[j] | B[j];
+    assign gen[j] = A[j] & B[j];
+    assign carry[j+1] = gen[j] | (prop[j] & carry[j]);
+    end:carry_loop
+  endgenerate
+assign result = {carry[N], sum};
 
   
 endmodule: carry_lookahead_adder
