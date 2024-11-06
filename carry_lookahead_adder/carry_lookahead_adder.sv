@@ -10,7 +10,6 @@ module carry_lookahead_adder#(parameter N=4)(
   logic[N-1:0] gen;
 
   assign carry[0] = CIN;
- // Add code for carry lookahead adder 
   genvar i;
   generate
     for(i = 0; i < N; i++) begin:adders

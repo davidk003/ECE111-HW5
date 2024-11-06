@@ -69,7 +69,9 @@ always_ff@(posedge clock, posedge reset) begin
         case(next_state)
         // Wait for start signal
 	IDLE: begin
-		
+                if(start) begin
+                        next_state <= INITIALIZE;
+                end
              // Sudent to add code here
 
 	end
