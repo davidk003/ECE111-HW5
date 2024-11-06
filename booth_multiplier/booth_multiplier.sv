@@ -44,7 +44,8 @@ enum logic[2:0]{
 //has same length as add_operand1 and add_operand2
 // Tie CIN to '0'
 carry_lookahead_adder #(.N(N+1)) adder_inst(
-
+        .A(), .B(), .CIN(0),
+        .result(shift_reg)
   // Student to add code
 
 );
@@ -76,12 +77,9 @@ always_ff@(posedge clock, posedge reset) begin
 	// Load Multiplicand and Multiplier in a load register and a shift register
         INITIALIZE: begin
                 // load multiplicand to load_reg_pos
-                // Student to Add Code Here
-
-
+                load_reg_pos <= multiplicand;
                 // load multiplicand_neg[N:0] to load_reg_neg
-                // Student to Add Code Here
-
+                load_reg_neg <= multiplicand_neg;
 
 		shift_reg 	<= {1'b0, {N{1'b0}}, multiplier, 1'b0};
 		next_state 	<= TEST;
@@ -98,7 +96,7 @@ always_ff@(posedge clock, posedge reset) begin
 	             // Pass positive Multiplicand to carry lookadahead adder input
 		     // Pass previous adder output value after shift to add with Multiplicand
 	             // move to add state
- 
+                        next_state <= ADD;
                      // Student to Add code
 
 
@@ -107,16 +105,18 @@ always_ff@(posedge clock, posedge reset) begin
        		     // Pass negative Multiplicand to carry lookadahead adder input
                      // Pass previous adder output value after shift to add with Multiplicand
                      // move to add state
-
+                        next_state <= ADD;
                      // Student to Add code
 
 
 		end
 		else begin
                       // assign add_operand1 to 0, Since no add operation to be perform pass 0 to carry lookadder input
-                      // Pass previous adder output value after shift to add with Multiplicand	
-		      // move to shift and increment count state
+                        add_operand1 <= 0;
+                      // Pass previous adder output value after shift to add with Multiplicand
 
+		      // move to shift and increment count state
+                        next_state <= SHIFT_AND_COUNT;
 
                        // Student to Add code
 
@@ -127,6 +127,7 @@ always_ff@(posedge clock, posedge reset) begin
 		shift_reg <= {sum, shift_reg[N:0]}; // Load shift register : Output sum from Adder which includes carry and retain previous lower bit of shift register
                 
                 // Move to shift and increment count state
+                next_state <= SHIFT_AND_COUNT;
                 // Student to Add code here
 
 
@@ -143,11 +144,12 @@ always_ff@(posedge clock, posedge reset) begin
                 if(count == N-1) begin // If 'N' times SHIFT operation performed then move to Done state else go back to Test state
                 
                     // Student to Add code here
-	
+                        next_state <= DONE;
                	end
               	else begin
                		
                     // Student to Add code here
+                    next_state <= TEST;
 
             	end
       	end
