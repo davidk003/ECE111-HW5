@@ -96,9 +96,9 @@ always_ff@(posedge clock, posedge reset) begin
 	TEST: begin
 		if(shift_reg[1:0] == 2'b01) begin
 	             // Pass positive Multiplicand to carry lookadahead adder input
-                        add_operand1 <= load_reg_pos;
+                        add_operand1 <= shift_reg[2*N+1:N+1];
 		     // Pass previous adder output value after shift to add with Multiplicand
-                        add_operand2 <= shift_reg[N:0];
+                        add_operand2 <= load_reg_pos;
 	             // move to add state
                         next_state <= ADD;
                      // Student to Add code
@@ -107,9 +107,9 @@ always_ff@(posedge clock, posedge reset) begin
 		end
 		else if(shift_reg[1:0] == 2'b10) begin
        		     // Pass negative Multiplicand to carry lookadahead adder input
-                        add_operand1 <= load_reg_neg;
+                        add_operand1 <= shift_reg[2*N+1:N+1];
                      // Pass previous adder output value after shift to add with Multiplicand
-                        add_operand2 <= shift_reg[N:0];
+                        add_operand2 <= load_reg_neg;
                      // move to add state
                         next_state <= ADD;
                      // Student to Add code
@@ -129,6 +129,7 @@ always_ff@(posedge clock, posedge reset) begin
 	end
 
 	ADD: begin
+                // cla_carry <= sum[N];
 		shift_reg <= {sum, shift_reg[N:0]}; // Load shift register : Output sum from Adder which includes carry and retain previous lower bit of shift register
                 
                 // Move to shift and increment count state
